@@ -1,0 +1,6 @@
+./client/node_modules/*
+./client/plugins/*
+./client/platforms/*
+./client/platforms/*
+./client/www/libs/jquery.mobile-1.4.5/demos
+./server/node_modules/*
