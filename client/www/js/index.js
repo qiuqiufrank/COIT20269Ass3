@@ -1,9 +1,8 @@
-// const apiUrl = "https://ass2-server.herokuapp.com/";
 const apiUrl = "http://localhost:5000/";
+//const apiUrl = "https://coit20269ass32022.herokuapp.com/";
 
 var loggedUser = null
 var editRecipe = null
-// var editRecipeList=[]
 
 function getFileSrc(name) {
   return apiUrl + "uploads/" + name
@@ -41,42 +40,6 @@ function persistentUser(user) {
 
 
 function onDeviceReady() {
-  console.log("Running cordova-" + cordova.platformId + "@" + cordova.version);
-  console.log(navigator.camera);
-
-  // checkLoggedIn();
-
-  $("#editImage").click(() => {
-
-    cordova.plugins.photoLibrary.getLibrary(
-      function (result) {
-        var library = result.library;
-        // Here we have the library as array
-
-        library.forEach(function (libraryItem) {
-          $("#editImage").attr("src", libraryItem.thumbnailURL)
-          // console.log("---success")
-        });
-
-      },
-      function (err) {
-        console.log('Error occured');
-      },
-      { // optional options
-        thumbnailWidth: 360,
-        thumbnailHeight: 240,
-        quality: 0.8,
-        includeAlbumData: false // default
-      }
-    );
-
-
-
-  })
-
-
-
-  //document.getElementById("deviceready").classList.add("ready");
 }
 
 async function updateViewRecipe(id) {
@@ -105,7 +68,6 @@ async function updateViewRecipe(id) {
       contentType: "application/json",
     });
     var author = data
-
   } catch (e) {
     return alert(e.responseText)
   }
@@ -498,12 +460,13 @@ function setUpProfile() {
 
 function setUpCreatedPages() {
   $(document).on("pagecreate", "#home", function () {
-    // const gallery = new Viewer(document.getElementById('images'));
     console.log("home created")
   });
   $(document).on("pagecreate", "#editList", function () {
-    console.log("el created")
     updateEditList()
+  });
+  $(document).on("pagecreate", "#profile", function () {
+    updateProfile()
   });
 }
 
