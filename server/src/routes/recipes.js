@@ -10,6 +10,9 @@ const ObjectId = require("mongodb").ObjectId;
 const {tryRemoveFile} = require("../common")
 
 
+/**
+ * Save images and videos into the uploads folder
+ */
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads')
@@ -26,9 +29,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 
-
-
-
+/**
+ * Get all the list of recipes
+ */
 recipeRoutes.route("/all").get(async function (req, res) {
   let db_connect = dbo.getDb();
   let recipes = await db_connect.collection("recipes").find({}).toArray()
@@ -39,6 +42,9 @@ recipeRoutes.route("/all").get(async function (req, res) {
 });
 
 
+/**
+ * Get a recipe by id
+ */
 recipeRoutes.route("/:id").get(async function (req, res) {
 
   let db_connect = dbo.getDb();
@@ -51,6 +57,9 @@ recipeRoutes.route("/:id").get(async function (req, res) {
 });
 
 
+/**
+ * delete a recipe by id
+ */
 recipeRoutes.route("/:id").delete(async function (req, res) {
   let db_connect = dbo.getDb();
   let myquery = { _id: ObjectId(req.params.id) };
@@ -70,21 +79,25 @@ recipeRoutes.route("/:id").delete(async function (req, res) {
 });
 
 
+/**
+ * Add a new recipe 
+ */
 recipeRoutes.route("/add").post(upload.any(), async function (req, res) {
 
   let db_connect = dbo.getDb();
 
 
   let recipe = { image: req.body.image, video: req.body.video, title: req.body.title, content: req.body.content, createBy: req.body.createBy }
-  // console.log(recipe)
   let s = await db_connect.collection("recipes").insertOne(recipe)
   if (s) {
-    // console.log(s)
     return res.status(200).json({})
   }
   return res.status(400).json({ "msg": "Error" })
 });
 
+/**
+ * Get the edit list of recipes created by the user
+ */
 recipeRoutes.route("/editList").post(async function (req, res) {
 
   let db_connect = dbo.getDb();
@@ -97,9 +110,10 @@ recipeRoutes.route("/editList").post(async function (req, res) {
 
 
 
+/**
+ * Update the recipe by id
+ */
 recipeRoutes.route("/edit/:id").put(upload.any(), async function (req, res) {
-
-
   let db_connect = dbo.getDb();
   let newRecipe = req.body
   try {
@@ -112,8 +126,6 @@ recipeRoutes.route("/edit/:id").put(upload.any(), async function (req, res) {
     if (newRecipe.video) {
       tryRemoveFile(oldRecipe.video)
     }
-
-    // console.log({ _id: ObjectId(req.params.id) })
     delete newRecipe._id
     let updatedRecipe = await db_connect.collection("recipes").updateOne({ _id: ObjectId(req.params.id) }, { $set: newRecipe })
     return res.status(200).json(updatedRecipe)

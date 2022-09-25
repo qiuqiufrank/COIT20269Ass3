@@ -1,27 +1,23 @@
 
 var express = require('express');
-var multer = require('multer');
 var cors = require("cors");
-// get MongoDB driver connection
 const dbo = require('./db/conn');
 
 const PORT = process.env.PORT || 5000;
 
-var upload = multer();
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(upload.array()); 
-app.use('/uploads', express.static('uploads'))
 
+app.use('/uploads', express.static('uploads'))
 app.use("/user",require('./routes/users'));
 app.use("/recipe",require('./routes/recipes'));
 
 
 /**
- * Easy to delete all data, testing only
+ * Easy to delete all data, only for testing 
  */
 app.use("/resetAll", async (req, res, next) => {
   let db_connect = dbo.getDb();
@@ -38,8 +34,6 @@ app.use("/resetAll", async (req, res, next) => {
         });
       }
     });
-
-
     return res.status(200).json({"msg":"Reset All"})
   }
   catch {
@@ -48,6 +42,10 @@ app.use("/resetAll", async (req, res, next) => {
   }
 })
 
+
+/**
+ * Global error handler
+ */
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).send('Something broke!')

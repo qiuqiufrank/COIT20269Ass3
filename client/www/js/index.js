@@ -1,25 +1,43 @@
-const apiUrl = "http://localhost:5000/";
-//const apiUrl = "https://coit20269ass32022.herokuapp.com/";
+/**
+ * server deployed on the heroku
+ */
+const apiUrl = "https://coit20269ass32022.herokuapp.com/";
+/**
+ * server deployed on the localhost
+ */
+//const apiUrl = "http://localhost:5000/";
 
+/**
+ * Used to save the information of logged user
+ */
 var loggedUser = null
+/**
+ * Current editing recipe
+ */
 var editRecipe = null
 
+/**
+ * Get src by name
+ * @param {*} name 
+ * @returns 
+ */
 function getFileSrc(name) {
   return apiUrl + "uploads/" + name
 }
 
 
-document.addEventListener("deviceready", onDeviceReady, false);
 
+/**
+ * Check if the user is logged in or not. If not, redirect to login page
+ * @returns 
+ */
 function isLoggedIn() {
   if (!loggedUser) {
     try {
       userStr = localStorage.getItem("loggedUser")
-      console.log(userStr)
       savedUser = JSON.parse(userStr)
     }
     catch (e) {
-      console.log(e)
       return goToLogin()
     }
     if (savedUser) {
@@ -30,18 +48,33 @@ function isLoggedIn() {
     }
   }
 }
+
+
+/**
+ * Save the user to localStorage
+ * @param {*} user 
+ */
 function persistentUser(user) {
   loggedUser = user
-  if(!loggedUser){
-    console.log(user)
-  }
   localStorage.setItem("loggedUser", JSON.stringify(loggedUser))
 }
 
 
+document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady() {
+  setUpCreatedPages()
+  setUpRegister()
+  setUpLogin()
+  setUpEditList()
+  setUpHome()
+  setUpProfile()
 }
 
+/**
+ * update the viewRecipe page
+ * @param {*} id 
+ * @returns 
+ */
 async function updateViewRecipe(id) {
   try {
     let data = await $.ajax({
@@ -60,7 +93,7 @@ async function updateViewRecipe(id) {
   $("#viewTitle").text(recipe.title)
   $("#viewContent").text(recipe.content)
 
-  console.log(recipe)
+  ///Get the information of the author
   try {
     let data = await $.ajax({
       url: apiUrl + "user/basic/" + recipe.createBy,
@@ -73,18 +106,24 @@ async function updateViewRecipe(id) {
   }
 
   $("#viewCreatedBy").text(author.name)
-  $("#createdBy").attr("src",getFileSrc(author.avatar))
-
-
-
+  $("#createdBy").attr("src", getFileSrc(author.avatar))
 
 }
 
+/**
+ * Go to the viewRecipe page by id
+ * @param {*} id 
+ */
 function goToViewRecipe(id) {
   $("body").pagecontainer("change", "#recipeView");
   updateViewRecipe(id)
 }
 
+/**
+ * Update the editRecipe page
+ * @param {*} id 
+ * @returns 
+ */
 async function updateEditRecipe(id) {
   try {
     let data = await $.ajax({
@@ -110,28 +149,47 @@ async function updateEditRecipe(id) {
 
 }
 
+/**
+ * Update the Profile page
+ */
 async function updateProfile() {
   $(".avatar img").attr("src", getFileSrc(loggedUser.avatar))
   $("#profileName").text(loggedUser.name)
   $("#profileEmail").text(loggedUser.email)
+  $("#changeAvatar").val('')
 
 }
 
+/**
+ * Go to the EditRecipe page by id
+ * @param {*} id 
+ */
 function goToEditRecipe(id) {
   updateEditRecipe(id);
   $("body").pagecontainer("change", "#recipeEdit");
 }
 
+/**
+ * Go to the Profile page
+ */
 function goToProfile() {
   updateProfile()
   $("body").pagecontainer("change", "#profile");
 }
 
 
+/**
+ * Go to the Login Page
+ * @param {*} id 
+ */
 function goToLogin(id) {
   $("body").pagecontainer("change", "#login");
 }
 
+/**
+ * update the Home page
+ * @returns 
+ */
 async function updateHome() {
   try {
     let data = await $.ajax({
@@ -151,7 +209,7 @@ async function updateHome() {
     innerHtml += `
                 <li>
                     <div class="card">
-                        <img src="${imgSrc}" />
+                        <img src="${imgSrc}" onclick="goToViewRecipe('${recipe._id}')" />
                         <div class="text">
                             <a onclick="goToViewRecipe('${recipe._id}')">${recipe.title}</a>
                             <p>${recipe.content}
@@ -166,16 +224,25 @@ async function updateHome() {
 
 }
 
+/**
+ * Go to the Home page
+ */
 function goToHome() {
   $("body").pagecontainer("change", "#home");
   updateHome()
 }
 
+/**
+ * Go to the EditList page
+ */
 function goToEditList() {
   $("body").pagecontainer("change", "#editList");
   updateEditList();
 }
 
+/**
+ * Update the EditList page
+ */
 async function updateEditList() {
   try {
     let data = await $.ajax({
@@ -188,10 +255,9 @@ async function updateEditList() {
     let innerHtml = ""
     for (let recipe of editRecipeList) {
       let imageSrc = getFileSrc(recipe.image)
-      // console.log(recipe)
       innerHtml += `
                     <div class="card">
-                        <img src="${imageSrc}" onclick="editRecipe(1)" />
+                        <img src="${imageSrc}" onclick="goToEditRecipe('${recipe._id}')" />
                         <div class="text">
                           <a onclick="goToEditRecipe('${recipe._id}')">${recipe.title}</a>
                           <p>${recipe.content}</p>
@@ -205,20 +271,16 @@ async function updateEditList() {
     $("#recipeEditList").html(innerHtml).enhanceWithin()
 
   } catch (e) {
-    // if (e.status != 200) {
     alert(e.responseText)
-    // }
-    // console.log()
   }
 
 }
 
-function viewImage(url) {
-  console.log(cordova);
-  PhotoViewer.show('static/Chicken_Noodle_Soup.jpg', 'Optional Title');
-}
 
 
+/**
+ * Setup the Login Page
+ */
 function setUpLogin() {
   $("#registerForm").validate({
     rules: {
@@ -234,12 +296,9 @@ function setUpLogin() {
     },
   })
   $("#loginForm").on('submit', async function (e) {
-    //prevent default
     e.preventDefault();
     var isvalid = $("#registerForm").valid();
-    // console.log(isvalid)
     if (isvalid) {
-
       let loginInputEmail = $("#loginInputEmail").val()
       let loginPassword = $("#loginPassword ").val()
 
@@ -257,10 +316,7 @@ function setUpLogin() {
         goToHome()
         updateProfile()
       } catch (e) {
-        // if (e.status != 200) {
-        alert(e.responseText)
-        // }
-        // console.log()
+        return alert(e.responseText)
       }
 
     }
@@ -268,6 +324,9 @@ function setUpLogin() {
 
 }
 
+/**
+ * Setup the Register page
+ */
 function setUpRegister() {
   $("#registerForm").validate({
     rules: {
@@ -283,10 +342,8 @@ function setUpRegister() {
     },
   })
   $("#registerForm").on('submit', async function (e) {
-    //prevent default
     e.preventDefault();
     var isvalid = $("#registerForm").valid();
-    // console.log(isvalid)
     if (isvalid) {
 
       let registerInputName = $("#registerInputName").val()
@@ -303,10 +360,8 @@ function setUpRegister() {
         });
         alert("Register successfully")
         goToLogin()
-        // return data;
       } catch (e) {
         alert(e.responseText)
-        // console.log()
       }
 
     }
@@ -314,6 +369,9 @@ function setUpRegister() {
 
 }
 
+/**
+ * Setup the Home page
+ */
 function setUpHome() {
   $(".homeMenu").click(() => {
     goToHome()
@@ -333,13 +391,6 @@ function setUpEditList() {
     formData.append("title", "Default")
     formData.append("content", "...")
     formData.append("createBy", loggedUser._id)
-
-
-    // do {
-    //   let valueObj = formEntries.next();
-    //   var keyObj = formKeys.next();
-    // } while (!keyObj.done)
-
     try {
 
       let data = await $.ajax({
@@ -351,7 +402,6 @@ function setUpEditList() {
         data: formData,
       });
       updateEditList();
-      console.log(data)
     } catch (e) {
       alert(e.responseText)
     }
@@ -376,8 +426,6 @@ function setUpEditList() {
   $("#editForm").submit(async function (e) {
     e.preventDefault()
     var formData = new FormData(this);
-    // var formKeys = formData.keys();
-    // var formEntries = formData.entries();
     formData.append("_id", editRecipe._id)
 
     try {
@@ -397,6 +445,10 @@ function setUpEditList() {
   })
 }
 
+/**
+ * Delete a recipe by id
+ * @param {*} id 
+ */
 async function deleteRecipe(id) {
   try {
     let data = await $.ajax({
@@ -413,6 +465,9 @@ async function deleteRecipe(id) {
 }
 
 
+/**
+ * Setup the Profile page
+ */
 function setUpProfile() {
   $(".profile").click(() => {
     goToProfile()
@@ -434,7 +489,6 @@ function setUpProfile() {
   $("#avatarForm").submit(async function (e) {
     e.preventDefault()
     var formData = new FormData(this);
-    // formData.append("_id", loggedUser._id)
     try {
       let data = await $.ajax({
         url: apiUrl + "user/avatar/" + loggedUser._id,
@@ -448,8 +502,7 @@ function setUpProfile() {
       persistentUser(loggedUser)
       alert("The avatar was changed successfuly.")
     } catch (e) {
-      console.log(e)
-      alert(e.responseText)
+      return alert(e.responseText)
     }
 
   })
@@ -457,10 +510,12 @@ function setUpProfile() {
 
 }
 
-
+/**
+ * Setup the all created pages
+ */
 function setUpCreatedPages() {
   $(document).on("pagecreate", "#home", function () {
-    console.log("home created")
+    updateHome()
   });
   $(document).on("pagecreate", "#editList", function () {
     updateEditList()
@@ -475,10 +530,3 @@ $(document).ready(() => {
   isLoggedIn()
 })
 
-
-setUpCreatedPages()
-setUpRegister()
-setUpLogin()
-setUpEditList()
-setUpHome()
-setUpProfile()
