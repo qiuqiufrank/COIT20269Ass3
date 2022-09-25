@@ -3,7 +3,7 @@
     background-color: #4da6ff;
 }
 /* #id Products */
- ul.ui-nodisc-icon .edit:after {
+ ul.ui-nodisc-icon .editListMenu:after {
     background-color: #ff4d4d;
 }
 
@@ -13,10 +13,9 @@
 }
 
 .card{
-  padding: 1rem;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  /* padding: 1rem; */
+  /* box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; */
   border-radius: 5px;
-  margin: 1rem 0;
   display: flex;
 
 }
@@ -110,7 +109,7 @@
   text-align: center;
 }
 
-#changeAvatar,#signOut{
+#signOut{
   width: fit-content;
   margin:auto;
   margin-top: 1rem;
@@ -138,6 +137,24 @@
   height: 50px;
 }
 
-#signIn,#register {
+#login,#register {
   text-align: center;
+}
+
+#editImage,#editVideo{
+  width: 50%;
+}
+
+#recipeEditList .card{
+  margin: 1rem 0;
+  justify-content: space-between;
+}
+
+#viewVideo,#viewImage{
+  width: 100%;
+  margin-top: 1rem;
+}
+
+#avatarForm{
+  margin: 1rem 2rem;
 }

@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src * gap:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src *; img-src * data: blob: android-webview-video-poster:; style-src * 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src * gap:; script-src * 'unsafe-inline' 
+    'unsafe-eval'; connect-src *; img-src * data: blob: android-webview-video-poster:; style-src * 'unsafe-inline'; media-src * blob:">
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
@@ -13,64 +15,51 @@
     <script src="./libs/jquery.js"></script>
     <script src="./libs/jquery.mobile-1.4.5/jquery.mobile-1.4.5.js"></script>
     <script src="./libs/jquery.validate.js"></script>
-    <link  href="./libs/viewer.min.css" rel="stylesheet">
-    <script src="./libs/viewer.min.js"></script>
+    <!-- <link href="./libs/viewer.min.css" rel="stylesheet">
+    <script src="./libs/viewer.min.js"></script> -->
 
     <title>Assignment 3</title>
 </head>
 
 <body>
 
-    <div data-role="page" id="home">      
+    <div data-role="page" id="home">
         <div data-role="content">
-            <input type="search" name="search-2" id="search-2" value="" placeholder="Search your favorite food recipe"/>
-            <div>
-                <div class="card">
-                    <img src="static/Chicken_Noodle_Soup.jpg" onclick="goToViewRecipe(1)"/>
-                    <div class="text">
-                        <a onclick="goToViewRecipe(1)">Chicken Soup</a>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi quod nostrum odit architecto officia maiores possimus, incidunt sunt id fugit, voluptate tempora adipisci maxime dignissimos inventore natus tempore magni tenetur.</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <img src="static/Beef_Soup.jpg"/>
-                    <div class="text">
-                        <a onclick="goToViewRecipe(2)">Beef Soup</a>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi quod nostrum odit architecto officia maiores possimus, incidunt sunt id fugit, voluptate tempora adipisci maxime dignissimos inventore natus tempore magni tenetur.</p>
-                    </div>
-                </div>
-            </div>
+            <ul id="homeList" data-role="listview" data-filter="true" data-filter-placeholder="Search your favorite food recipe..."
+                data-inset="true">
+            </ul>
+
         </div>
         <div data-role="footer" data-position="fixed" data-tap-toggle="false">
             <div data-role="navbar">
                 <ul class="ui-nodisc-icon">
-                    <li><a class="ui-btn-active" href="#home"  data-icon="home" ></a></li>
-                    <li><a class="edit" href="#edit" data-icon="edit"></a></li>
-                    <li><a  href="#profile" data-icon="user"></a></li>
+                    <li><a class="ui-btn-active homeMenu" data-icon="home"></a></li>
+                    <li><a class=" editListMenu" data-icon="edit"></a></li>
+                    <li><a class="profile" data-icon="user"></a></li>
                 </ul>
             </div>
-        </div> 
+        </div>
     </div>
 
-    <div data-role="page" id="recipeView">      
+    <div data-role="page" id="recipeView">
         <div data-role="content">
             <div class="d-flex-between align-items-center">
-                <h4>Chicken Soup</h4>
+                <h4 id="viewTitle"></h4>
                 <div>
-                    <button data-role="button" data-inline="true" data-mini="true" onclick="goToHome()">Back to List</button>
+                    <button data-role="button" data-inline="true" data-mini="true" onclick="goToHome()">Back to
+                        List</button>
                 </div>
             </div>
 
             <div>
-                <div id="images">
-                    <img src="static/Chicken_Noodle_Soup.jpg" />
-                    <img src="static/Beef_Soup.jpg" />
-                </div>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita ab praesentium fugiat laboriosam earum nemo itaque neque cupiditate, quam, ratione et perferendis distinctio quos odit, quod maiores similique unde accusamus.</p>
+                <img id="viewImage"  />
+                <video id="viewVideo" controls autoplay ></video>
+                <p id="viewContent"></p>
                 <div class="d-flex-right align-items-center">
-                    <h4>Written By: &nbsp; </h4>
+                    <h4>Created By: &nbsp; </h4>
+                    <span id="viewCreatedBy"></span>
                     <div class="avatar-mini">
-                        <img src="./static/spongebob.jpg"/>
+                        <img id="createdBy" src="" />
                     </div>
                 </div>
             </div>
@@ -78,77 +67,69 @@
         <div data-role="footer" data-position="fixed" data-tap-toggle="false">
             <div data-role="navbar">
                 <ul class="ui-nodisc-icon">
-                    <li><a class="ui-btn-active" href="#home"  data-icon="home" ></a></li>
-                    <li><a class="edit" href="#edit" data-icon="edit"></a></li>
-                    <li><a  href="#profile" data-icon="user"></a></li>
+                    <li><a class="ui-btn-active homeMenu"  data-icon="home"></a></li>
+                    <li><a class="editListMenu" data-icon="edit"></a></li>
+                    <li><a class="profile" data-icon="user"></a></li>
                 </ul>
             </div>
-        </div> 
+        </div>
     </div>
 
-    <div data-role="page" id="edit">      
+    <div data-role="page" id="editList">
         <div data-role="content">
             <div>
                 <div class="edit-title">
                     <h4>Edit your recipes</h4>
                     <div>
-                        <button data-role="button" data-inline="true" data-mini="true">ADD</button>
+                        <button id="addRecipe" data-role="button" data-inline="true" data-mini="true">ADD</button>
                     </div>
                 </div>
-                <div class="card">
-                    <img src="static/Chicken_Noodle_Soup.jpg" onclick="editRecipe(1)"/>
-                    <div class="text">
-                        <a onclick="goToEditRecipe(1)">Chicken Soup</a>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi quod nostrum odit architecto officia maiores possimus, incidunt sunt id fugit, voluptate tempora adipisci maxime dignissimos inventore natus tempore magni tenetur.</p>
-                    </div>
-                    <div>
-                        <button data-role="button" data-inline="true"   data-mini="true">DELETE</button>
-                    </div>
+                <div id="recipeEditList">
                 </div>
             </div>
         </div>
         <div data-role="footer" data-position="fixed" data-tap-toggle="false">
             <div data-role="navbar">
                 <ul class="ui-nodisc-icon">
-                    <li><a class="" href="#home"  data-icon="home" ></a></li>
-                    <li><a class="ui-btn-active edit" href="#edit" data-icon="edit"></a></li>
-                    <li><a  href="#profile" data-icon="user"></a></li>
+                    <li><a class="homeMenu" data-icon="home"></a></li>
+                    <li><a class="ui-btn-active  editListMenu" data-icon="edit"></a></li>
+                    <li><a class="profile" data-icon="user"></a></li>
                 </ul>
             </div>
-        </div> 
+        </div>
     </div>
 
-    <div data-role="page" id="recipeEdit">      
+    <div data-role="page" id="recipeEdit">
         <div data-role="content">
             <div class="d-flex-between align-items-center">
                 <h4>Edit Recipe</h4>
                 <div>
-                    <button data-role="button" data-inline="true" onclick="goToEdit()" data-mini="true">Back to List</button>
+                    <button data-role="button" data-inline="true" onclick="goToEditList()" data-mini="true">Back to
+                        List</button>
                 </div>
             </div>
             <div>
-                <div class="image-edit-container">
-                    <div class="images-edit">
-                        <div class="image-edit">
-                            <img  class="image-edit" src="static/Chicken_Noodle_Soup.jpg" />
-                            <div class="select">
-                                <a class="ui-btn ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext"></a>
-                                <!-- <a class="ui-btn ui-btn-b ui-shadow ui-corner-all ui-icon-check ui-btn-icon-notext"></a> -->
-                            </div>
-                        </div>
-                        <img src="static/Beef_Soup.jpg" />
-                    </div>
-                    <div class="controls">
-                        <button data-role="button" data-inline="true" data-mini="true">DELETE</button>
-                        <button data-role="button" data-inline="true" data-mini="true">UPLOAD</button>
-                    </div>
-                </div>
-                <hr/>
                 <div class="recipe-form-container">
-                    <form>
-                        <input value="Chicken Soup"> </input>
-                        <textarea>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita ab praesentium fugiat laboriosam earum nemo itaque neque cupiditate, quam, ratione et perferendis distinctio quos odit, quod maiores similique unde accusamus.  </textarea>
-                        <input type="submit" value="SUBMIT"/>
+                    <form id="editForm">
+                        <div>
+                            <label>Image:</label>
+                            <input  id="chooseImage" name="image" type="file">
+                            <img  id="editImage" />
+                        </div>
+                        <div>
+                            <label>Video:</label>
+                            <input  id="chooseVideo" name="video" type="file" accept="video/*">
+                            <video id="editVideo" controls ></video>
+                        </div>
+                        <div>
+                            <label>Title:</label>
+                            <input id="editTitle" name="title" value="Chicken Soup"> </input>
+                        </div>
+                        <div>
+                            <label>Content:</label>
+                            <textarea id="editContent" name="content">Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita ab praesentium fugiat laboriosam earum nemo itaque neque cupiditate, quam, ratione et perferendis distinctio quos odit, quod maiores similique unde accusamus.  </textarea>
+                        </div>
+                        <input id="editSubmit" type="submit" value="SUBMIT" />
                     </form>
                 </div>
             </div>
@@ -156,38 +137,43 @@
         <div data-role="footer" data-position="fixed" data-tap-toggle="false">
             <div data-role="navbar">
                 <ul class="ui-nodisc-icon">
-                    <li><a class="ui-btn-active" href="#home"  data-icon="home" ></a></li>
-                    <li><a class="edit" href="#edit" data-icon="edit"></a></li>
-                    <li><a  href="#profile" data-icon="user"></a></li>
+                    <li><a  class="homeMenu" data-icon="home"></a></li>
+                    <li><a class="ui-btn-active  editListMenu" data-icon="edit"></a></li>
+                    <li><a class="profile" data-icon="user"></a></li>
                 </ul>
             </div>
-        </div> 
+        </div>
     </div>
 
     <div data-role="page" id="profile">
         <div data-role="content">
             <div class="profile-container">
-                <div class="avatar">
-                    <img src="./static/spongebob.jpg"/>
-                </div>
-                <button id="changeAvatar" data-role="button" data-inline="true" data-mini="true">CHANGE</button>
+                <form id="avatarForm" >
+                        <div class="avatar">
+                            <img src="" />
+                        </div>
+                        <input  id="changeAvatar" name="image" type="file">
+                        <button  data-role="button" data-inline="true" data-mini="true">CHANGE AVATAR</button>
+                </form>
+
                 <div class="field">
                     <span>Username:</span>
-                    <span id="profileName">Spongebob</span>
+                    <span id="profileName"></span>
                 </div>
                 <div class="field">
-                    <span >Email:</span>
-                    <span id="profileEmail">Spb@test.com</span>
+                    <span>Email:</span>
+                    <span id="profileEmail"></span>
                 </div>
-                <a href="#login" id="signOut" data-role="button" data-inline="true" data-mini="true" data-theme="b">SIGN OUT</a>
+                <a  id="signOut" data-role="button" data-inline="true" data-mini="true" data-theme="b">SIGN
+                    OUT</a>
             </div>
         </div>
         <div data-role="footer" data-position="fixed" data-tap-toggle="false">
             <div data-role="navbar">
                 <ul class="ui-nodisc-icon">
-                    <li><a  href="#home" data-icon="home"></a></li>
-                    <li><a class="edit" href="#edit" data-icon="edit"></a></li>
-                    <li><a  class="ui-btn-active" href="#profile" data-icon="user"></a></li>
+                    <li><a class="homeMenu" data-icon="home"></a></li>
+                    <li><a class=" editListMenu" data-icon="edit"></a></li>
+                    <li><a class="ui-btn-active profile" data-icon="user"></a></li>
                 </ul>
             </div>
         </div>
@@ -198,7 +184,7 @@
             <h3>Please Sign In</h3>
             <form id="loginForm">
                 <input type="email" id="loginInputEmail" name="inputEmail" placeholder="Email" />
-                <input type="password" id="loginPassword" placeholder="Password"/>
+                <input type="password" id="loginPassword" placeholder="Password" />
                 <input class="button" type="submit" name="Sign In" value="Submit" />
                 <a href="#register" class="button" data-theme="b"> Register</a>
             </form>
@@ -218,8 +204,8 @@
         </div>
     </div>
 
-<script src="cordova.js"></script>
-<script src="js/index.js"></script>
+    <script src="cordova.js"></script>
+    <script src="js/index.js"></script>
 </body>
 
 </html>
